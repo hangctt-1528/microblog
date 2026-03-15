@@ -75,6 +75,7 @@ export async function getAdminPosts(
   let query = supabase
     .from('posts')
     .select(POST_WITH_AUTHOR_TAGS_SELECT)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
   if (statusFilter) {
