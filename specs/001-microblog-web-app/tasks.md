@@ -18,14 +18,14 @@
 
 **Purpose**: Bootstrap the Next.js project and install all tooling. No app code yet.
 
-- [ ] T001 Initialize Next.js 15 App Router project with TypeScript, Tailwind CSS, ESLint, `src/` directory, and `@/*` import alias via `pnpm create next-app@latest`; verify `package.json`, `tsconfig.json`, `tailwind.config.ts`, `next.config.ts` are generated
-- [ ] T002 Install production dependencies: `@supabase/supabase-js @supabase/ssr marked isomorphic-dompurify zod`
-- [ ] T003 [P] Install dev dependencies: `vitest @vitejs/plugin-react @testing-library/react @testing-library/user-event @playwright/test`
-- [ ] T004 [P] Configure Vitest in `vitest.config.ts` (plugin-react, jsdom environment, path alias `@/*` matching tsconfig)
-- [ ] T005 [P] Configure Playwright in `playwright.config.ts` (baseURL `http://localhost:3000`, webServer pointing to `pnpm dev`, trace on first-retry)
-- [ ] T006 [P] Initialise Supabase CLI: run `supabase init` from repo root; creates `supabase/` directory with `config.toml`
-- [ ] T007 [P] Create `.env.local.example` with all required keys: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
-- [ ] T008 Bootstrap shadcn/ui: run `pnpm dlx shadcn@latest init` (TypeScript, default style, `src/components/ui/` output); then add primitives: `button input badge textarea label`
+- [X] T001 Initialize Next.js 15 App Router project with TypeScript, Tailwind CSS, ESLint, `src/` directory, and `@/*` import alias via `pnpm create next-app@latest`; verify `package.json`, `tsconfig.json`, `tailwind.config.ts`, `next.config.ts` are generated
+- [X] T002 Install production dependencies: `@supabase/supabase-js @supabase/ssr marked isomorphic-dompurify zod`
+- [X] T003 [P] Install dev dependencies: `vitest @vitejs/plugin-react @testing-library/react @testing-library/user-event @playwright/test`
+- [X] T004 [P] Configure Vitest in `vitest.config.ts` (plugin-react, jsdom environment, path alias `@/*` matching tsconfig)
+- [X] T005 [P] Configure Playwright in `playwright.config.ts` (baseURL `http://localhost:3000`, webServer pointing to `pnpm dev`, trace on first-retry)
+- [X] T006 [P] Initialise Supabase CLI: run `supabase init` from repo root; creates `supabase/` directory with `config.toml`
+- [X] T007 [P] Create `.env.local.example` with all required keys: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- [X] T008 Bootstrap shadcn/ui: run `pnpm dlx shadcn@latest init` (TypeScript, default style, `src/components/ui/` output); then add primitives: `button input badge textarea label`
 
 **Checkpoint**: `pnpm dev` runs without errors. `pnpm vitest run` exits 0 (no tests yet). Shadcn components exist under `src/components/ui/`.
 
@@ -36,25 +36,25 @@
 **Purpose**: Database schema, auth middleware, core utilities, and typed query layer.
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T009 Create database migration `supabase/migrations/20260315000001_initial_schema.sql` — defines tables `profiles`, `posts`, `tags`, `post_tags`, `comments` with all columns, CHECK constraints, FK constraints, and indexes as specified in `data-model.md`
-- [ ] T010 Create RLS policies migration `supabase/migrations/20260315000002_rls_policies.sql` — enables RLS on all 5 tables and creates all policies from `data-model.md` (public_read_posts, author_manage_own_posts, public_insert_comment, auth_moderate_comments, etc.)
-- [ ] T011 Create seed data `supabase/seed.sql` — inserts ≥2 published posts with different tags, ≥1 draft post, and ≥1 approved comment to support local development and independent test criteria
-- [ ] T012 Apply migrations locally (`supabase db push`) and regenerate TypeScript types (`supabase gen types typescript --local > src/types/database.types.ts`)
-- [ ] T013 Implement `src/lib/supabase/server.ts` — SSR-aware Supabase client using `createServerClient` from `@supabase/ssr` with `cookies()` from `next/headers`; typed with `Database` from `database.types.ts`
-- [ ] T014 [P] Implement `src/lib/supabase/client.ts` — browser Supabase client using `createBrowserClient` from `@supabase/ssr`; typed with `Database`
-- [ ] T015 Implement `src/middleware.ts` — auth guard using `createServerClient` from `@supabase/ssr`; calls `supabase.auth.getUser()`; redirects unauthenticated requests on `/admin/:path*` (excluding `/admin/login`) to `/admin/login`; set `config.matcher = ['/admin/:path*']`
-- [ ] T016 [P] Implement `src/lib/utils/slug.ts` — export pure function `generateSlug(title: string): string` (NFD normalize → strip diacritics → lowercase → replace non-alphanumeric with `-` → trim hyphens → truncate to 80 chars)
-- [ ] T017 [P] Implement `src/lib/utils/markdown.ts` — export `renderMarkdown(raw: string): string` using `marked.parse()` + `DOMPurify.sanitize()` with `FORBID_TAGS: ['script','iframe','object','embed']` and `FORBID_ATTR: ['onerror','onclick','onload']`
-- [ ] T018 [P] Implement `src/lib/validations/comment.ts` — Zod schema `commentSchema` with fields: `post_id` (uuid), `author_name` (non-empty string max 200), `author_email` (z.string().email()), `body` (non-empty string max 5000); export inferred TypeScript type
-- [ ] T019 [P] Implement `src/lib/validations/post.ts` — Zod schema `postSchema` with fields: `title` (non-empty string max 500), `body_markdown` (string default `''`), `slug` (optional, regex `/^[a-z0-9]+(?:-[a-z0-9]+)*$/`), `tag_ids` (optional uuid array); export inferred type
-- [ ] T020 [P] Implement `src/lib/validations/tag.ts` — Zod schema `tagSchema` with fields: `name` (non-empty string max 100, trimmed), `slug` (optional, same regex as post slug); export inferred type
-- [ ] T021 [P] Write unit tests for `slug.ts` in `tests/unit/slug.test.ts` covering: basic ASCII conversion, Unicode/diacritic stripping, truncation at 80 chars without mid-word break, consecutive special characters collapse to single hyphen, leading/trailing hyphen trimming, empty string input
-- [ ] T022 [P] Write unit tests for `markdown.ts` in `tests/unit/markdown.test.ts` covering: Markdown headings/bold/links render to HTML, `<script>` tag stripped, `<iframe>` stripped, `onclick` attribute stripped, empty string renders to empty string
-- [ ] T023 [P] Write unit tests for `comment.ts` validation in `tests/unit/comment-validation.test.ts` covering: valid payload passes, empty `author_name` fails, invalid email fails, empty `body` fails, missing `post_id` fails
-- [ ] T024 Implement `src/lib/queries/posts.ts` — typed query functions: `getPublishedPosts()` (filter `status='published' AND deleted_at IS NULL`, order `published_at DESC`, join `post_tags→tags`), `getPostBySlug(slug)` (same filters + slug match), `getAdminPosts(statusFilter?)` (no public filters, include deleted flag, join author + tags)
-- [ ] T025 [P] Implement `src/lib/queries/tags.ts` — `getTagBySlug(slug)`, `getPostsByTag(tagId)` (published+non-deleted, order published_at DESC), `getAllTagsWithCount()` (join post_tags for count), `getOrCreateTag(name)` (upsert by name, auto-generate slug)
-- [ ] T026 [P] Implement `src/lib/queries/comments.ts` — `getApprovedComments(postId)` (filter `status='approved'`, order `created_at ASC`), `getPendingComments()` (filter `status='pending'`, join post title+slug, paginate)
-- [ ] T027 Configure root layout `src/app/layout.tsx` — import `./globals.css`, set HTML `lang="en"`, add `<body>` with Inter font via `next/font`; update `globals.css` to include Tailwind base/components/utilities directives; create `src/types/index.ts` re-exporting domain types
+- [X] T009 Create database migration `supabase/migrations/20260315000001_initial_schema.sql` — defines tables `profiles`, `posts`, `tags`, `post_tags`, `comments` with all columns, CHECK constraints, FK constraints, and indexes as specified in `data-model.md`
+- [X] T010 Create RLS policies migration `supabase/migrations/20260315000002_rls_policies.sql` — enables RLS on all 5 tables and creates all policies from `data-model.md` (public_read_posts, author_manage_own_posts, public_insert_comment, auth_moderate_comments, etc.)
+- [X] T011 Create seed data `supabase/seed.sql` — inserts ≥2 published posts with different tags, ≥1 draft post, and ≥1 approved comment to support local development and independent test criteria
+- [X] T012 Apply migrations locally (`supabase db push`) and regenerate TypeScript types (`supabase gen types typescript --local > src/types/database.types.ts`)
+- [X] T013 Implement `src/lib/supabase/server.ts` — SSR-aware Supabase client using `createServerClient` from `@supabase/ssr` with `cookies()` from `next/headers`; typed with `Database` from `database.types.ts`
+- [X] T014 [P] Implement `src/lib/supabase/client.ts` — browser Supabase client using `createBrowserClient` from `@supabase/ssr`; typed with `Database`
+- [X] T015 Implement `src/middleware.ts` — auth guard using `createServerClient` from `@supabase/ssr`; calls `supabase.auth.getUser()`; redirects unauthenticated requests on `/admin/:path*` (excluding `/admin/login`) to `/admin/login`; set `config.matcher = ['/admin/:path*']`
+- [X] T016 [P] Implement `src/lib/utils/slug.ts` — export pure function `generateSlug(title: string): string` (NFD normalize → strip diacritics → lowercase → replace non-alphanumeric with `-` → trim hyphens → truncate to 80 chars)
+- [X] T017 [P] Implement `src/lib/utils/markdown.ts` — export `renderMarkdown(raw: string): string` using `marked.parse()` + `DOMPurify.sanitize()` with `FORBID_TAGS: ['script','iframe','object','embed']` and `FORBID_ATTR: ['onerror','onclick','onload']`
+- [X] T018 [P] Implement `src/lib/validations/comment.ts` — Zod schema `commentSchema` with fields: `post_id` (uuid), `author_name` (non-empty string max 200), `author_email` (z.string().email()), `body` (non-empty string max 5000); export inferred TypeScript type
+- [X] T019 [P] Implement `src/lib/validations/post.ts` — Zod schema `postSchema` with fields: `title` (non-empty string max 500), `body_markdown` (string default `''`), `slug` (optional, regex `/^[a-z0-9]+(?:-[a-z0-9]+)*$/`), `tag_ids` (optional uuid array); export inferred type
+- [X] T020 [P] Implement `src/lib/validations/tag.ts` — Zod schema `tagSchema` with fields: `name` (non-empty string max 100, trimmed), `slug` (optional, same regex as post slug); export inferred type
+- [X] T021 [P] Write unit tests for `slug.ts` in `tests/unit/slug.test.ts` covering: basic ASCII conversion, Unicode/diacritic stripping, truncation at 80 chars without mid-word break, consecutive special characters collapse to single hyphen, leading/trailing hyphen trimming, empty string input
+- [X] T022 [P] Write unit tests for `markdown.ts` in `tests/unit/markdown.test.ts` covering: Markdown headings/bold/links render to HTML, `<script>` tag stripped, `<iframe>` stripped, `onclick` attribute stripped, empty string renders to empty string
+- [X] T023 [P] Write unit tests for `comment.ts` validation in `tests/unit/comment-validation.test.ts` covering: valid payload passes, empty `author_name` fails, invalid email fails, empty `body` fails, missing `post_id` fails
+- [X] T024 Implement `src/lib/queries/posts.ts` — typed query functions: `getPublishedPosts()` (filter `status='published' AND deleted_at IS NULL`, order `published_at DESC`, join `post_tags→tags`), `getPostBySlug(slug)` (same filters + slug match), `getAdminPosts(statusFilter?)` (no public filters, include deleted flag, join author + tags)
+- [X] T025 [P] Implement `src/lib/queries/tags.ts` — `getTagBySlug(slug)`, `getPostsByTag(tagId)` (published+non-deleted, order published_at DESC), `getAllTagsWithCount()` (join post_tags for count), `getOrCreateTag(name)` (upsert by name, auto-generate slug)
+- [X] T026 [P] Implement `src/lib/queries/comments.ts` — `getApprovedComments(postId)` (filter `status='approved'`, order `created_at ASC`), `getPendingComments()` (filter `status='pending'`, join post title+slug, paginate)
+- [X] T027 Configure root layout `src/app/layout.tsx` — import `./globals.css`, set HTML `lang="en"`, add `<body>` with Inter font via `next/font`; update `globals.css` to include Tailwind base/components/utilities directives; create `src/types/index.ts` re-exporting domain types
 
 **Checkpoint**: `pnpm vitest run` passes all slug + markdown + validation unit tests. `supabase db push` applies cleanly. TypeScript `pnpm tsc --noEmit` reports zero errors.
 
@@ -66,14 +66,14 @@
 
 **Independent Test**: Seed DB has ≥2 published posts + ≥1 draft. Navigate to `/` — published posts appear newest-first, draft is absent. Click one post — full content renders at `/posts/[slug]`. Soft-deleted post never appears.
 
-- [ ] T028 [P] [US1] Implement `src/components/tag/TagBadge.tsx` — styled badge rendering `tag.name`; wraps in `<Link href="/tags/[slug]">` using Tailwind `bg-slate-100 rounded-full px-2 py-0.5 text-sm`
-- [ ] T029 [P] [US1] Implement `src/components/ui/EmptyState.tsx` — reusable component accepting `message: string` prop; renders centred paragraph with muted text
-- [ ] T030 [P] [US1] Implement `src/components/post/PostCard.tsx` — displays `title` (as `<Link href="/posts/[slug]">`), `published_at` formatted date, excerpt (first 160 chars of `body_markdown` stripped of Markdown syntax), and tag badges via `TagBadge`
-- [ ] T031 [P] [US1] Implement `src/components/ui/Nav.tsx` — site header with microblog name linking to `/`; sticky top bar using Tailwind; responsive at all breakpoints
-- [ ] T032 [US1] Implement home page `src/app/page.tsx` — RSC: call `getPublishedPosts()` from `lib/queries/posts.ts`; render list of `PostCard` components; show `EmptyState` if no posts; no client JS required
-- [ ] T033 [P] [US1] Implement `src/components/post/PostBody.tsx` — client-safe component rendering pre-sanitized HTML via `dangerouslySetInnerHTML={{ __html: html }}`; add `prose` typography styles via Tailwind
-- [ ] T034 [US1] Implement post detail page `src/app/posts/[slug]/page.tsx` — RSC: call `getPostBySlug(slug)`, call `notFound()` if not found or `deleted_at IS NOT NULL`; render `PostBody` with `renderMarkdown(post.body_markdown)`; add `generateMetadata` returning post title + description
-- [ ] T035 [US1] Wire `Nav` into root layout `src/app/layout.tsx` — add `<Nav />` above `{children}`; verify responsive layout at 320px, 768px, 1280px
+- [X] T028 [P] [US1] Implement `src/components/tag/TagBadge.tsx` — styled badge rendering `tag.name`; wraps in `<Link href="/tags/[slug]">` using Tailwind `bg-slate-100 rounded-full px-2 py-0.5 text-sm`
+- [X] T029 [P] [US1] Implement `src/components/ui/EmptyState.tsx` — reusable component accepting `message: string` prop; renders centred paragraph with muted text
+- [X] T030 [P] [US1] Implement `src/components/post/PostCard.tsx` — displays `title` (as `<Link href="/posts/[slug]">`), `published_at` formatted date, excerpt (first 160 chars of `body_markdown` stripped of Markdown syntax), and tag badges via `TagBadge`
+- [X] T031 [P] [US1] Implement `src/components/ui/Nav.tsx` — site header with microblog name linking to `/`; sticky top bar using Tailwind; responsive at all breakpoints
+- [X] T032 [US1] Implement home page `src/app/page.tsx` — RSC: call `getPublishedPosts()` from `lib/queries/posts.ts`; render list of `PostCard` components; show `EmptyState` if no posts; no client JS required
+- [X] T033 [P] [US1] Implement `src/components/post/PostBody.tsx` — client-safe component rendering pre-sanitized HTML via `dangerouslySetInnerHTML={{ __html: html }}`; add `prose` typography styles via Tailwind
+- [X] T034 [US1] Implement post detail page `src/app/posts/[slug]/page.tsx` — RSC: call `getPostBySlug(slug)`, call `notFound()` if not found or `deleted_at IS NOT NULL`; render `PostBody` with `renderMarkdown(post.body_markdown)`; add `generateMetadata` returning post title + description
+- [X] T035 [US1] Wire `Nav` into root layout `src/app/layout.tsx` — add `<Nav />` above `{children}`; verify responsive layout at 320px, 768px, 1280px
 
 **Checkpoint**: `pnpm dev` → navigate to `/` — seed posts visible, newest first, each showing excerpt + tags. Click post → `/posts/[slug]` renders HTML. Draft post absent from home. `pnpm tsc --noEmit` clean.
 
@@ -85,14 +85,14 @@
 
 **Independent Test**: Log in at `/admin/login`. Create post with Markdown body → verify absent from `/`. Click Publish → verify post appears on `/` and at `/posts/[slug]` with rendered HTML. Unauthenticated GET `/admin/posts` → 302 redirect to `/admin/login`.
 
-- [ ] T036 [US2] Implement admin login page `src/app/admin/login/page.tsx` — client component with email + password form; calls `supabase.auth.signInWithPassword()`; on success redirects to `/admin/posts`; show error message on failure
-- [ ] T037 [US2] Implement admin layout `src/app/admin/layout.tsx` — shared shell with sidebar nav (links: Posts `/admin/posts`, Tags `/admin/tags`, Comments `/admin/comments`); logout button calling `supabase.auth.signOut()` + redirect to `/admin/login`; confirms middleware guard is in place
-- [ ] T038 [P] [US2] Implement `src/components/admin/PostEditor.tsx` — controlled client component with: `title` input (auto-triggers `generateSlug` preview), `slug` input (editable override), `body_markdown` textarea, live Markdown preview panel (calls `renderMarkdown`), submit + cancel buttons; accepts `initialData?` for edit mode
-- [ ] T039 [US2] Implement `POST /api/admin/posts` route handler in `src/app/api/admin/posts/route.ts` — validate body with `postSchema`; call `generateSlug(title)` if no slug override; check slug uniqueness (append `-2`, `-3` on collision); insert post with `author_id = session.user.id`, `status = 'draft'`; return 201 with created post
-- [ ] T040 [US2] Implement new post page `src/app/admin/posts/new/page.tsx` — renders `PostEditor`; on submit calls Server Action → `POST /api/admin/posts` → redirects to `/admin/posts` on success
-- [ ] T041 [US2] Implement admin posts list page `src/app/admin/posts/page.tsx` — RSC: call `getAdminPosts()` (all non-deleted); table rows showing title, status badge, published_at, author; "New Post" button linking to `/admin/posts/new`; Publish button per draft row
-- [ ] T042 [US2] Extend `PATCH /api/admin/posts/[id]` route handler in `src/app/api/admin/posts/[id]/route.ts` — support `action: 'publish'` (set `status='published'`, `published_at=now()`); call `revalidatePath('/')` and `revalidatePath('/posts/[slug]')`; return 200 with updated post
-- [ ] T043 [US2] Wire Publish button in `src/app/admin/posts/page.tsx` — Server Action calling `PATCH /api/admin/posts/[id]` with `{ action: 'publish' }`; revalidate admin list after success
+- [X] T036 [US2] Implement admin login page `src/app/admin/login/page.tsx` — client component with email + password form; calls `supabase.auth.signInWithPassword()`; on success redirects to `/admin/posts`; show error message on failure
+- [X] T037 [US2] Implement admin layout `src/app/admin/layout.tsx` — shared shell with sidebar nav (links: Posts `/admin/posts`, Tags `/admin/tags`, Comments `/admin/comments`); logout button calling `supabase.auth.signOut()` + redirect to `/admin/login`; confirms middleware guard is in place
+- [X] T038 [P] [US2] Implement `src/components/admin/PostEditor.tsx` — controlled client component with: `title` input (auto-triggers `generateSlug` preview), `slug` input (editable override), `body_markdown` textarea, live Markdown preview panel (calls `renderMarkdown`), submit + cancel buttons; accepts `initialData?` for edit mode
+- [X] T039 [US2] Implement `POST /api/admin/posts` route handler in `src/app/api/admin/posts/route.ts` — validate body with `postSchema`; call `generateSlug(title)` if no slug override; check slug uniqueness (append `-2`, `-3` on collision); insert post with `author_id = session.user.id`, `status = 'draft'`; return 201 with created post
+- [X] T040 [US2] Implement new post page `src/app/admin/posts/new/page.tsx` — renders `PostEditor`; on submit calls Server Action → `POST /api/admin/posts` → redirects to `/admin/posts` on success
+- [X] T041 [US2] Implement admin posts list page `src/app/admin/posts/page.tsx` — RSC: call `getAdminPosts()` (all non-deleted); table rows showing title, status badge, published_at, author; "New Post" button linking to `/admin/posts/new`; Publish button per draft row
+- [X] T042 [US2] Extend `PATCH /api/admin/posts/[id]` route handler in `src/app/api/admin/posts/[id]/route.ts` — support `action: 'publish'` (set `status='published'`, `published_at=now()`); call `revalidatePath('/')` and `revalidatePath('/posts/[slug]')`; return 200 with updated post
+- [X] T043 [US2] Wire Publish button in `src/app/admin/posts/page.tsx` — Server Action calling `PATCH /api/admin/posts/[id]` with `{ action: 'publish' }`; revalidate admin list after success
 
 **Checkpoint**: Full auth + create + publish flow works. Draft absent from `/`. Published post visible on `/` immediately. Unauthenticated `/admin/*` → redirect. `pnpm tsc --noEmit` clean.
 
@@ -104,12 +104,12 @@
 
 **Independent Test**: Create two published posts — one tagged "tech", one tagged "life". Visit `/tags/tech` → only first post. Visit `/tags/life` → only second. Visit `/tags/nonexistent` → empty state, no crash.
 
-- [ ] T044 [US3] Extend `src/lib/queries/tags.ts` — implement `upsertTagsByNames(names: string[]): Promise<Tag[]>` that calls `getOrCreateTag` for each name, auto-generating slug via `generateSlug`; used by post create/update flow
-- [ ] T045 [US3] Extend `src/components/admin/PostEditor.tsx` — add tag input with comma-separated entry; display existing tags as removable badges; accept `availableTags` prop for autocomplete suggestions; include `tag_ids` in form submission payload
-- [ ] T046 [US3] Extend `POST /api/admin/posts` and `PATCH /api/admin/posts/[id]` in `src/app/api/admin/posts/route.ts` and `src/app/api/admin/posts/[id]/route.ts` — after post upsert, call `upsertTagsByNames(tagNames)` then delete+reinsert all `post_tags` rows for the post (replace strategy)
-- [ ] T047 [US3] Implement `POST /api/admin/tags` route handler in `src/app/api/admin/tags/route.ts` — validate with `tagSchema`; auto-generate slug if not provided; insert tag; return 201; return 409 if name or slug already exists
-- [ ] T048 [US3] Implement tag page `src/app/tags/[slug]/page.tsx` — RSC: call `getTagBySlug(slug)` → `notFound()` if not found; call `getPostsByTag(tag.id)` (published + non-deleted, order `published_at DESC`); render list of `PostCard`; show `EmptyState` if no posts; add `generateMetadata` with tag name
-- [ ] T049 [P] [US3] Update `src/app/admin/posts/page.tsx` — pass `availableTags` (from `getAllTagsWithCount()`) to `PostEditor` for autocomplete; and pass `availableTags` to `new/page.tsx` and `[id]/edit/page.tsx`
+- [X] T044 [US3] Extend `src/lib/queries/tags.ts` — implement `upsertTagsByNames(names: string[]): Promise<Tag[]>` that calls `getOrCreateTag` for each name, auto-generating slug via `generateSlug`; used by post create/update flow
+- [X] T045 [US3] Extend `src/components/admin/PostEditor.tsx` — add tag input with comma-separated entry; display existing tags as removable badges; accept `availableTags` prop for autocomplete suggestions; include `tag_ids` in form submission payload
+- [X] T046 [US3] Extend `POST /api/admin/posts` and `PATCH /api/admin/posts/[id]` in `src/app/api/admin/posts/route.ts` and `src/app/api/admin/posts/[id]/route.ts` — after post upsert, call `upsertTagsByNames(tagNames)` then delete+reinsert all `post_tags` rows for the post (replace strategy)
+- [X] T047 [US3] Implement `POST /api/admin/tags` route handler in `src/app/api/admin/tags/route.ts` — validate with `tagSchema`; auto-generate slug if not provided; insert tag; return 201; return 409 if name or slug already exists
+- [X] T048 [US3] Implement tag page `src/app/tags/[slug]/page.tsx` — RSC: call `getTagBySlug(slug)` → `notFound()` if not found; call `getPostsByTag(tag.id)` (published + non-deleted, order `published_at DESC`); render list of `PostCard`; show `EmptyState` if no posts; add `generateMetadata` with tag name
+- [X] T049 [P] [US3] Update `src/app/admin/posts/page.tsx` — pass `availableTags` (from `getAllTagsWithCount()`) to `PostEditor` for autocomplete; and pass `availableTags` to `new/page.tsx` and `[id]/edit/page.tsx`
 
 **Checkpoint**: Create post with tags in CMS → tags appear on PostCard on `/`. Tag page shows correct published posts only. Drafts absent from tag page. Auto-created tag persists in DB.
 
@@ -121,10 +121,10 @@
 
 **Independent Test**: Visit `/posts/[slug]`. Submit comment form with valid name, email, body → confirmation message shown, comment NOT visible on page. Open CMS comments → comment appears as `pending`.
 
-- [ ] T050 [P] [US4] Implement `src/components/comment/CommentForm.tsx` — client component with `author_name`, `author_email`, `body` fields; on submit calls `POST /api/comments`; displays field-level validation errors from response; shows success message "Your comment is awaiting moderation." on 201; disables form while submitting
-- [ ] T051 [P] [US4] Implement `src/components/comment/CommentList.tsx` — RSC-compatible component accepting `comments: Comment[]`; renders each comment with author name, date, body; shows `EmptyState` if empty; never shows `pending` or `rejected` comments
-- [ ] T052 [US4] Implement `POST /api/comments` route handler in `src/app/api/comments/route.ts` — validate body with `commentSchema`; verify post exists with `status='published'` and `deleted_at IS NULL` (return 404 if not); insert comment with `status='pending'` (never from client input); return 201 with confirmation message
-- [ ] T053 [US4] Extend post detail page `src/app/posts/[slug]/page.tsx` — add `CommentList` (RSC: call `getApprovedComments(post.id)`) + `CommentForm` below `PostBody`; ensure comments section has clear visual separation
+- [X] T050 [P] [US4] Implement `src/components/comment/CommentForm.tsx` — client component with `author_name`, `author_email`, `body` fields; on submit calls `POST /api/comments`; displays field-level validation errors from response; shows success message "Your comment is awaiting moderation." on 201; disables form while submitting
+- [X] T051 [P] [US4] Implement `src/components/comment/CommentList.tsx` — RSC-compatible component accepting `comments: Comment[]`; renders each comment with author name, date, body; shows `EmptyState` if empty; never shows `pending` or `rejected` comments
+- [X] T052 [US4] Implement `POST /api/comments` route handler in `src/app/api/comments/route.ts` — validate body with `commentSchema`; verify post exists with `status='published'` and `deleted_at IS NULL` (return 404 if not); insert comment with `status='pending'` (never from client input); return 201 with confirmation message
+- [X] T053 [US4] Extend post detail page `src/app/posts/[slug]/page.tsx` — add `CommentList` (RSC: call `getApprovedComments(post.id)`) + `CommentForm` below `PostBody`; ensure comments section has clear visual separation
 
 **Checkpoint**: Submit valid comment → 201, "awaiting moderation" message, not visible. Submit with empty email → 422 + field error shown. Comment on soft-deleted post URL → 404.
 
@@ -136,10 +136,10 @@
 
 **Independent Test**: Submit two pending comments (P4 done). In `/admin/comments`, approve first → rejects second. Visit `/posts/[slug]` → only approved comment visible.
 
-- [ ] T054 [P] [US5] Implement `GET /api/admin/comments` route handler in `src/app/api/admin/comments/route.ts` — supports `status` query param (default `pending`), pagination `page`/`per_page`; joins `posts` table to include `post_title` and `post_slug`; return paginated list
-- [ ] T055 [P] [US5] Implement `PATCH /api/admin/comments/[id]` route handler in `src/app/api/admin/comments/[id]/route.ts` — validate `action ∈ {approve, reject}`; return 409 if comment already moderated; update `status`; call `revalidatePath('/posts/[slug]')` after approve; return 200 with updated comment
-- [ ] T056 [P] [US5] Implement `src/components/admin/CommentModerationRow.tsx` — displays `author_name`, `author_email`, `body`, `post_title` (linked to `/posts/[slug]`), `created_at`; Approve and Reject buttons; buttons disabled after action taken
-- [ ] T057 [US5] Implement admin comments page `src/app/admin/comments/page.tsx` — RSC: call `getPendingComments()`; render list of `CommentModerationRow`; Server Actions for approve/reject that call `PATCH /api/admin/comments/[id]`; show count of pending; show empty state when queue is clear
+- [X] T054 [P] [US5] Implement `GET /api/admin/comments` route handler in `src/app/api/admin/comments/route.ts` — supports `status` query param (default `pending`), pagination `page`/`per_page`; joins `posts` table to include `post_title` and `post_slug`; return paginated list
+- [X] T055 [P] [US5] Implement `PATCH /api/admin/comments/[id]` route handler in `src/app/api/admin/comments/[id]/route.ts` — validate `action ∈ {approve, reject}`; return 409 if comment already moderated; update `status`; call `revalidatePath('/posts/[slug]')` after approve; return 200 with updated comment
+- [X] T056 [P] [US5] Implement `src/components/admin/CommentModerationRow.tsx` — displays `author_name`, `author_email`, `body`, `post_title` (linked to `/posts/[slug]`), `created_at`; Approve and Reject buttons; buttons disabled after action taken
+- [X] T057 [US5] Implement admin comments page `src/app/admin/comments/page.tsx` — RSC: call `getPendingComments()`; render list of `CommentModerationRow`; Server Actions for approve/reject that call `PATCH /api/admin/comments/[id]`; show count of pending; show empty state when queue is clear
 
 **Checkpoint**: Two pending comments → approve first, reject second → visit `/posts/[slug]` → only approved comment visible. CMS queue no longer shows moderated comments.
 
@@ -151,10 +151,10 @@
 
 **Independent Test**: Publish a post → appears on `/`. Soft-delete → gone from `/` and `/posts/[slug]` (returns 404); DB row still exists with `deleted_at` set. Unpublish a different post → disappears from public pages, shows as draft in CMS.
 
-- [ ] T058 [US6] Extend `PATCH /api/admin/posts/[id]` route handler in `src/app/api/admin/posts/[id]/route.ts` — add support for: content edit (title, body_markdown, slug, tag_ids), `action:'unpublish'` (status=draft, published_at=null), `action:'delete'` (soft-delete: deleted_at=now()); call appropriate `revalidatePath` after each action
-- [ ] T059 [US6] Implement edit post page `src/app/admin/posts/[id]/edit/page.tsx` — RSC: fetch post by ID via `getAdminPosts()`; render `PostEditor` pre-filled with existing data (title, slug, body_markdown, tag_ids); Server Action on submit calls `PATCH /api/admin/posts/[id]` with updated fields
-- [ ] T060 [P] [US6] Extend admin posts list `src/app/admin/posts/page.tsx` — add per-row action buttons: "Edit" (links to `/admin/posts/[id]/edit`), "Unpublish" (Server Action for `action:'unpublish'`), "Delete" (Server Action for `action:'delete'` with confirmation); visually indicate deleted rows differently
-- [ ] T061 [US6] Harden public query guards in `src/lib/queries/posts.ts` — verify `getPublishedPosts()`, `getPostBySlug()`, and `getPostsByTag()` ALL filter `deleted_at IS NULL AND status='published'`; add regression unit test in `tests/unit/post-queries.test.ts` asserting soft-deleted and draft posts are excluded
+- [X] T058 [US6] Extend `PATCH /api/admin/posts/[id]` route handler in `src/app/api/admin/posts/[id]/route.ts` — add support for: content edit (title, body_markdown, slug, tag_ids), `action:'unpublish'` (status=draft, published_at=null), `action:'delete'` (soft-delete: deleted_at=now()); call appropriate `revalidatePath` after each action
+- [X] T059 [US6] Implement edit post page `src/app/admin/posts/[id]/edit/page.tsx` — RSC: fetch post by ID via `getAdminPosts()`; render `PostEditor` pre-filled with existing data (title, slug, body_markdown, tag_ids); Server Action on submit calls `PATCH /api/admin/posts/[id]` with updated fields
+- [X] T060 [P] [US6] Extend admin posts list `src/app/admin/posts/page.tsx` — add per-row action buttons: "Edit" (links to `/admin/posts/[id]/edit`), "Unpublish" (Server Action for `action:'unpublish'`), "Delete" (Server Action for `action:'delete'` with confirmation); visually indicate deleted rows differently
+- [X] T061 [US6] Harden public query guards in `src/lib/queries/posts.ts` — verify `getPublishedPosts()`, `getPostBySlug()`, and `getPostsByTag()` ALL filter `deleted_at IS NULL AND status='published'`; add regression unit test in `tests/unit/post-queries.test.ts` asserting soft-deleted and draft posts are excluded
 
 **Checkpoint**: Publish → on `/`. Soft-delete → 404 at `/posts/[slug]`, absent from `/`. DB row intact. Unpublish → draft in CMS, absent from public.
 
@@ -166,10 +166,10 @@
 
 **Independent Test**: In CMS tags list, create new tag "design". Rename "design" → "ux-design" → slug updates to "ux-design". Try deleting tag still used by a post → system refuses with error message. Delete unused tag → removed successfully.
 
-- [ ] T062 [US7] Extend `GET /api/admin/tags` route handler in `src/app/api/admin/tags/route.ts` — query all tags with `post_count` via `count(post_tags.tag_id)` join; return sorted by name
-- [ ] T063 [P] [US7] Implement `PATCH /api/admin/tags/[id]` route handler in `src/app/api/admin/tags/[id]/route.ts` — validate with `tagSchema`; auto-generate new slug from new name if not provided; check new slug not already taken by another tag (409 if collision); update `name` and `slug`; call `revalidatePath('/tags/[old-slug]')` and `revalidatePath('/tags/[new-slug]')`
-- [ ] T064 [P] [US7] Implement `DELETE /api/admin/tags/[id]` route handler in `src/app/api/admin/tags/[id]/route.ts` — check `post_tags` count for this tag; return 409 with explanatory message if count > 0 (FR-012); permanently remove tag if count = 0; return 204
-- [ ] T065 [US7] Implement admin tags page `src/app/admin/tags/page.tsx` — RSC: fetch all tags with counts via `getAllTagsWithCount()`; render table with name, slug, post_count; inline "Create Tag" form (Server Action → `POST /api/admin/tags`); "Rename" button per row (inline edit); "Delete" button per row disabled with tooltip if post_count > 0
+- [X] T062 [US7] Extend `GET /api/admin/tags` route handler in `src/app/api/admin/tags/route.ts` — query all tags with `post_count` via `count(post_tags.tag_id)` join; return sorted by name
+- [X] T063 [P] [US7] Implement `PATCH /api/admin/tags/[id]` route handler in `src/app/api/admin/tags/[id]/route.ts` — validate with `tagSchema`; auto-generate new slug from new name if not provided; check new slug not already taken by another tag (409 if collision); update `name` and `slug`; call `revalidatePath('/tags/[old-slug]')` and `revalidatePath('/tags/[new-slug]')`
+- [X] T064 [P] [US7] Implement `DELETE /api/admin/tags/[id]` route handler in `src/app/api/admin/tags/[id]/route.ts` — check `post_tags` count for this tag; return 409 with explanatory message if count > 0 (FR-012); permanently remove tag if count = 0; return 204
+- [X] T065 [US7] Implement admin tags page `src/app/admin/tags/page.tsx` — RSC: fetch all tags with counts via `getAllTagsWithCount()`; render table with name, slug, post_count; inline "Create Tag" form (Server Action → `POST /api/admin/tags`); "Rename" button per row (inline edit); "Delete" button per row disabled with tooltip if post_count > 0
 
 **Checkpoint**: Create tag → appears in list. Rename → name + slug update, `/tags/[new-slug]` works. Delete in-use tag → inline error. Delete unused tag → removed from list.
 
@@ -179,15 +179,15 @@
 
 **Purpose**: Responsive layout, error boundaries, ISR cache wiring, and E2E tests.
 
-- [ ] T066 [P] Implement `src/app/not-found.tsx` (global 404 page), `src/app/posts/[slug]/not-found.tsx`, and `src/app/tags/[slug]/not-found.tsx` — each shows a clear human-readable not-found message with a link back to `/`
-- [ ] T067 [P] Implement slug collision handling in `src/lib/queries/posts.ts` — `ensureUniqueSlug(baseSlug, excludeId?)` function: queries DB for existing slugs matching `baseSlug`, `baseSlug-2`, … and returns first available; used in `POST /api/admin/posts` and `PATCH /api/admin/posts/[id]`
-- [ ] T068 [P] Audit and complete `revalidatePath` calls across all admin mutations — verify publish, unpublish, soft-delete, edit, tag rename, comment approve all call `revalidatePath` for affected public routes (`/`, `/posts/[slug]`, `/tags/[slug]`)
-- [ ] T069 [P] Responsive layout audit — verify `PostCard`, home page, post detail, tag page, and admin pages render correctly at 320px (mobile), 768px (tablet), 1280px (desktop) using Tailwind `sm:` / `md:` / `lg:` breakpoints; fix any overflow or font-size issues
-- [ ] T070 [P] Write E2E test `tests/e2e/home-timeline.spec.ts` — scenario: seed posts exist → load `/` → both published posts appear newest-first → draft absent → click post → full content renders → back to home within 3 clicks
-- [ ] T071 [P] Write E2E test `tests/e2e/post-publish.spec.ts` — scenario: log in → create post as draft → verify absent from `/` → publish → verify appears on `/` and at `/posts/[slug]` with rendered Markdown → unauthenticated access to `/admin/posts` → redirect to login
-- [ ] T072 [P] Write E2E test `tests/e2e/comment-moderation.spec.ts` — scenario: submit 2 comments on a post → CMS approve first, reject second → visit `/posts/[slug]` → only approved comment visible
-- [ ] T073 Run quickstart.md validation — follow steps exactly from `specs/001-microblog-web-app/quickstart.md` in a clean environment; confirm `pnpm dev`, migrations, type generation, and `vercel deploy --prod` all succeed; update quickstart if any step is inaccurate
-- [ ] T074 [P] Update `.github/agents/copilot-instructions.md` via `SPECIFY_FEATURE=001-microblog-web-app bash .specify/scripts/bash/update-agent-context.sh copilot` after all source code is in place
+- [X] T066 [P] Implement `src/app/not-found.tsx` (global 404 page), `src/app/posts/[slug]/not-found.tsx`, and `src/app/tags/[slug]/not-found.tsx` — each shows a clear human-readable not-found message with a link back to `/`
+- [X] T067 [P] Implement slug collision handling in `src/lib/queries/posts.ts` — `ensureUniqueSlug(baseSlug, excludeId?)` function: queries DB for existing slugs matching `baseSlug`, `baseSlug-2`, … and returns first available; used in `POST /api/admin/posts` and `PATCH /api/admin/posts/[id]`
+- [X] T068 [P] Audit and complete `revalidatePath` calls across all admin mutations — verify publish, unpublish, soft-delete, edit, tag rename, comment approve all call `revalidatePath` for affected public routes (`/`, `/posts/[slug]`, `/tags/[slug]`)
+- [X] T069 [P] Responsive layout audit — verify `PostCard`, home page, post detail, tag page, and admin pages render correctly at 320px (mobile), 768px (tablet), 1280px (desktop) using Tailwind `sm:` / `md:` / `lg:` breakpoints; fix any overflow or font-size issues
+- [X] T070 [P] Write E2E test `tests/e2e/home-timeline.spec.ts` — scenario: seed posts exist → load `/` → both published posts appear newest-first → draft absent → click post → full content renders → back to home within 3 clicks
+- [X] T071 [P] Write E2E test `tests/e2e/post-publish.spec.ts` — scenario: log in → create post as draft → verify absent from `/` → publish → verify appears on `/` and at `/posts/[slug]` with rendered Markdown → unauthenticated access to `/admin/posts` → redirect to login
+- [X] T072 [P] Write E2E test `tests/e2e/comment-moderation.spec.ts` — scenario: submit 2 comments on a post → CMS approve first, reject second → visit `/posts/[slug]` → only approved comment visible
+- [X] T073 Run quickstart.md validation — follow steps exactly from `specs/001-microblog-web-app/quickstart.md` in a clean environment; confirm `pnpm dev`, migrations, type generation, and `vercel deploy --prod` all succeed; update quickstart if any step is inaccurate
+- [X] T074 [P] Update `.github/agents/copilot-instructions.md` via `SPECIFY_FEATURE=001-microblog-web-app bash .specify/scripts/bash/update-agent-context.sh copilot` after all source code is in place
 
 **Final Checkpoint**: `pnpm vitest run` all tests pass. `pnpm exec playwright test` all E2E pass. `pnpm tsc --noEmit` clean. `vercel deploy --prod` succeeds. All 8 success criteria from spec.md verified.
 

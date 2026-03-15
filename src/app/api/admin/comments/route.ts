@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 
 // GET /api/admin/comments — list comments for the moderation queue
