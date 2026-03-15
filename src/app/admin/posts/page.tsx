@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { cn } from '@/lib/utils'
-import { publishPostAction } from './actions'
+import { publishPostAction, unpublishPostAction, deletePostAction } from './actions'
 
 export const metadata = { title: 'Posts' }
 
@@ -44,25 +44,36 @@ export default async function AdminPostsPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {posts.map((post) => (
-                <tr key={post.id} className="bg-background hover:bg-muted/30 transition-colors">
+                <tr
+                  key={post.id}
+                  className={cn(
+                    'bg-background hover:bg-muted/30 transition-colors',
+                    post.deleted_at && 'opacity-50',
+                  )}
+                >
                   <td className="px-4 py-3">
                     <span className="font-medium line-clamp-1">{post.title}</span>
                     <span className="text-xs text-muted-foreground block mt-0.5">/posts/{post.slug}</span>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell">
-                    <Badge
-                      variant={post.status === 'published' ? 'default' : 'secondary'}
-                      className="capitalize"
-                    >
-                      {post.status}
-                    </Badge>
+                    {post.deleted_at ? (
+                      <Badge variant="destructive" className="capitalize">Deleted</Badge>
+                    ) : (
+                      <Badge
+                        variant={post.status === 'published' ? 'default' : 'secondary'}
+                        className="capitalize"
+                      >
+                        {post.status}
+                      </Badge>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
                     {formatDate(post.published_at)}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-2">
-                      {post.status === 'draft' && (
+                    <div className="flex items-center justify-end gap-2 flex-wrap">
+                      {/* Publish — draft only */}
+                      {post.status === 'draft' && !post.deleted_at && (
                         <form
                           action={async () => {
                             'use server'
@@ -74,12 +85,48 @@ export default async function AdminPostsPage() {
                           </Button>
                         </form>
                       )}
-                      <Link
-                        href={`/admin/posts/${post.id}/edit`}
-                        className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
-                      >
-                        Edit
-                      </Link>
+
+                      {/* Unpublish — published only */}
+                      {post.status === 'published' && !post.deleted_at && (
+                        <form
+                          action={async () => {
+                            'use server'
+                            await unpublishPostAction(post.id, post.slug)
+                          }}
+                        >
+                          <Button type="submit" size="sm" variant="outline">
+                            Unpublish
+                          </Button>
+                        </form>
+                      )}
+
+                      {/* Edit */}
+                      {!post.deleted_at && (
+                        <Link
+                          href={`/admin/posts/${post.id}/edit`}
+                          className={cn(buttonVariants({ variant: 'outline', size: 'sm' }))}
+                        >
+                          Edit
+                        </Link>
+                      )}
+
+                      {/* Delete — soft-delete if not already deleted */}
+                      {!post.deleted_at && (
+                        <form
+                          action={async () => {
+                            'use server'
+                            await deletePostAction(post.id, post.slug)
+                          }}
+                        >
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant="destructive"
+                          >
+                            Delete
+                          </Button>
+                        </form>
+                      )}
                     </div>
                   </td>
                 </tr>
