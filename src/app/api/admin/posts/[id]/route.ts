@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { postSchema } from '@/lib/validations/post'
 import { generateSlug } from '@/lib/utils/slug'
 import { ensureUniqueSlug } from '@/lib/queries/posts'
+import { upsertTagsByNames } from '@/lib/queries/tags'
 
 // PATCH /api/admin/posts/[id] — edit, publish, unpublish, or soft-delete
 export async function PATCH(
@@ -90,8 +91,17 @@ export async function PATCH(
     return NextResponse.json({ error: updateError.message }, { status: 500 })
   }
 
-  // Sync tags if provided
-  if (Array.isArray(tag_ids)) {
+  // Sync tags if provided (tag_names preferred; falls back to tag_ids)
+  const tag_names = (body as Record<string, unknown>).tag_names
+  if (Array.isArray(tag_names)) {
+    await supabase.from('post_tags').delete().eq('post_id', id)
+    if (tag_names.length > 0) {
+      const tags = await upsertTagsByNames(tag_names as string[])
+      await supabase
+        .from('post_tags')
+        .insert(tags.map((t) => ({ post_id: id, tag_id: t.id })))
+    }
+  } else if (Array.isArray(tag_ids)) {
     await supabase.from('post_tags').delete().eq('post_id', id)
     if (tag_ids.length > 0) {
       await supabase

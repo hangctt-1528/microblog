@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { postSchema } from '@/lib/validations/post'
 import { generateSlug } from '@/lib/utils/slug'
 import { ensureUniqueSlug } from '@/lib/queries/posts'
+import { upsertTagsByNames } from '@/lib/queries/tags'
 
 // POST /api/admin/posts — create draft post
 export async function POST(request: Request) {
@@ -58,11 +59,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  // Sync tags
-  if (tag_ids && tag_ids.length > 0) {
+  // Sync tags: prefer tag_names (auto-upsert), fall back to tag_ids
+  const { tag_names } = parsed.data as typeof parsed.data & { tag_names?: string[] }
+  const resolvedTagIds: string[] = []
+
+  if (Array.isArray(tag_names) && tag_names.length > 0) {
+    const tags = await upsertTagsByNames(tag_names)
+    resolvedTagIds.push(...tags.map((t) => t.id))
+  } else if (tag_ids && tag_ids.length > 0) {
+    resolvedTagIds.push(...tag_ids)
+  }
+
+  if (resolvedTagIds.length > 0) {
     await supabase
       .from('post_tags')
-      .insert(tag_ids.map((tag_id) => ({ post_id: post.id, tag_id })))
+      .insert(resolvedTagIds.map((tag_id) => ({ post_id: post.id, tag_id })))
   }
 
   revalidatePath('/')

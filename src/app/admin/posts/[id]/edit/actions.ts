@@ -9,7 +9,8 @@ import { ensureUniqueSlug } from '@/lib/queries/posts'
 import { upsertTagsByNames } from '@/lib/queries/tags'
 import type { PostEditorState } from '@/components/admin/PostEditor'
 
-export async function createPostAction(
+export async function updatePostAction(
+  postId: string,
   _prevState: PostEditorState,
   formData: FormData,
 ): Promise<PostEditorState> {
@@ -20,7 +21,7 @@ export async function createPostAction(
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { errors: { _form: ['You must be signed in to create a post.'] } }
+    return { errors: { _form: ['You must be signed in.'] } }
   }
 
   const raw = {
@@ -35,35 +36,42 @@ export async function createPostAction(
   }
 
   const { title, body_markdown, slug: slugOverride } = parsed.data
-  const baseSlug = slugOverride || generateSlug(title)
-  const slug = await ensureUniqueSlug(baseSlug)
 
-  const { data: post, error } = await supabase
+  // Get current post slug for cache invalidation
+  const { data: existing } = await supabase
     .from('posts')
-    .insert({
-      title,
-      slug,
-      body_markdown: body_markdown ?? '',
-      status: 'draft',
-      author_id: user.id,
-    })
-    .select()
+    .select('slug')
+    .eq('id', postId)
     .single()
 
-  if (error || !post) {
-    return { errors: { _form: [error?.message ?? 'Failed to create post.'] } }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updates: Record<string, any> = { title, body_markdown: body_markdown ?? '' }
+
+  if (slugOverride && slugOverride !== existing?.slug) {
+    updates.slug = await ensureUniqueSlug(slugOverride, postId)
   }
 
-  // Sync tags: upsert by name then link to post
+  const { error } = await supabase.from('posts').update(updates).eq('id', postId)
+
+  if (error) {
+    return { errors: { _form: [error.message] } }
+  }
+
+  // Replace all tag associations (delete + reinsert)
   const tagNames = formData.getAll('tag_names').map(String).filter(Boolean)
+  await supabase.from('post_tags').delete().eq('post_id', postId)
   if (tagNames.length > 0) {
     const tags = await upsertTagsByNames(tagNames)
     await supabase
       .from('post_tags')
-      .insert(tags.map((t) => ({ post_id: post.id, tag_id: t.id })))
+      .insert(tags.map((t) => ({ post_id: postId, tag_id: t.id })))
   }
 
+  // Revalidate public cache for old and new slugs
   revalidatePath('/admin/posts')
   revalidatePath('/')
+  revalidatePath(`/posts/${existing?.slug ?? ''}`)
+  if (updates.slug) revalidatePath(`/posts/${updates.slug}`)
+
   redirect('/admin/posts')
 }

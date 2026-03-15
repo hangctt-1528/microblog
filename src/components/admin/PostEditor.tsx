@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import type { TagWithCount } from '@/types'
 
 export type PostEditorState = {
   errors?: {
@@ -24,12 +25,16 @@ export interface PostEditorInitialData {
   slug?: string
   body_markdown?: string
   tag_ids?: string[]
+  /** Tag names to pre-populate (preferred over tag_ids for edit mode) */
+  initialTagNames?: string[]
 }
 
 interface PostEditorProps {
   /** Server Action — receives (prevState, formData) => PostEditorState */
   action: (prevState: PostEditorState, formData: FormData) => Promise<PostEditorState>
   initialData?: PostEditorInitialData
+  /** Available tags from getAllTagsWithCount() for autocomplete */
+  availableTags?: TagWithCount[]
   cancelHref?: string
   submitLabel?: string
 }
@@ -37,6 +42,7 @@ interface PostEditorProps {
 export function PostEditor({
   action,
   initialData,
+  availableTags = [],
   cancelHref = '/admin/posts',
   submitLabel = 'Save draft',
 }: PostEditorProps) {
@@ -49,7 +55,13 @@ export function PostEditor({
   const [previewHtml, setPreviewHtml] = useState('')
   const [showPreview, setShowPreview] = useState(false)
 
-  // Auto-generate slug from title unless the user has manually edited it
+  // Tag state
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    initialData?.initialTagNames ?? [],
+  )
+  const [tagInput, setTagInput] = useState('')
+
+  // Auto-generate slug from title unless user has manually edited it
   useEffect(() => {
     if (!slugTouched) {
       setSlug(generateSlug(title))
@@ -65,6 +77,40 @@ export function PostEditor({
     })
     return () => { cancelled = true }
   }, [body, showPreview])
+
+  // Tag helpers
+  const normalise = (s: string) => s.trim().toLowerCase()
+
+  function addTag(name: string) {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    if (selectedTags.some((t) => normalise(t) === normalise(trimmed))) return
+    setSelectedTags((prev) => [...prev, trimmed])
+    setTagInput('')
+  }
+
+  function removeTag(name: string) {
+    setSelectedTags((prev) => prev.filter((t) => t !== name))
+  }
+
+  function handleTagKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault()
+      addTag(tagInput)
+    } else if (e.key === 'Backspace' && !tagInput && selectedTags.length > 0) {
+      setSelectedTags((prev) => prev.slice(0, -1))
+    }
+  }
+
+  function handleTagBlur() {
+    if (tagInput.trim()) addTag(tagInput)
+  }
+
+  const filteredSuggestions = availableTags.filter(
+    (t) =>
+      t.name.toLowerCase().includes(tagInput.toLowerCase()) &&
+      !selectedTags.some((st) => normalise(st) === normalise(t.name)),
+  )
 
   return (
     <form action={formAction} className="space-y-6">
@@ -117,6 +163,77 @@ export function PostEditor({
         {state?.errors?.slug && (
           <p className="text-sm text-destructive">{state.errors.slug[0]}</p>
         )}
+      </div>
+
+      {/* Tags */}
+      <div className="space-y-1.5">
+        <Label htmlFor="tag-input">Tags</Label>
+
+        {/* Selected tag badges */}
+        {selectedTags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {selectedTags.map((name) => (
+              <span
+                key={name}
+                className="inline-flex items-center gap-1 bg-slate-100 text-slate-700 rounded-full px-2 py-0.5 text-sm"
+              >
+                {name}
+                <button
+                  type="button"
+                  onClick={() => removeTag(name)}
+                  className="text-slate-400 hover:text-slate-700 leading-none"
+                  aria-label={`Remove tag ${name}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Tag input + autocomplete */}
+        <div className="relative">
+          <Input
+            id="tag-input"
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            onKeyDown={handleTagKeyDown}
+            onBlur={handleTagBlur}
+            placeholder="Add tag… (Enter or comma to confirm)"
+            autoComplete="off"
+          />
+
+          {tagInput.length > 0 && filteredSuggestions.length > 0 && (
+            <div className="absolute top-full mt-1 w-full rounded-md border border-border bg-background shadow-md z-10 overflow-hidden">
+              {filteredSuggestions.slice(0, 6).map((tag) => (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onMouseDown={(e) => {
+                    // prevent blur from firing before click
+                    e.preventDefault()
+                    addTag(tag.name)
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-sm hover:bg-muted transition-colors flex items-center justify-between"
+                >
+                  <span>{tag.name}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {tag.post_count} post{tag.post_count !== 1 ? 's' : ''}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Press Enter or comma to add. New tags are created automatically.
+        </p>
+
+        {/* Hidden inputs — submitted with the form */}
+        {selectedTags.map((name) => (
+          <input key={name} type="hidden" name="tag_names" value={name} />
+        ))}
       </div>
 
       {/* Body / Preview toggle */}
