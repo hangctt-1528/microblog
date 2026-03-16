@@ -1,5 +1,20 @@
 # Microblog Web App
 
+## 📚 Documentation
+
+Chi tiết từng chủ đề được tổ chức trong thư mục [`docs/`](docs/):
+
+| Tài liệu | Mô tả |
+|----------|-------|
+| [📖 Introduction](docs/introduction.md) | Giới thiệu sản phẩm, màn hình, trải nghiệm người dùng |
+| [🛠️ Tech Stack](docs/techstack.md) | Công nghệ sử dụng, AI tools, MCP servers |
+| [✨ Features](docs/features.md) | Tính năng public và admin CMS |
+| [🏗️ Architecture](docs/architecture.md) | Kiến trúc hệ thống, API routes, data model |
+| [🚀 Getting Started](docs/getting-started.md) | Hướng dẫn cài đặt và chạy local |
+| [🧪 Testing](docs/testing.md) | Unit tests (Vitest) và E2E tests (Playwright) |
+| [🚢 Deployment](docs/deployment.md) | Deploy lên Vercel và Supabase production |
+| [🔄 Workflows](docs/workflows.md) | Post lifecycle, comment moderation, auth flow |
+
 ---
 
 ## 🌟 Giới Thiệu Sản Phẩm
