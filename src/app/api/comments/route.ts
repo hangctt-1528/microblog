@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { commentSchema } from '@/lib/validations/comment'
 
 // POST /api/comments — submit a reader comment on a published post
@@ -35,7 +35,10 @@ export async function POST(request: Request) {
   }
 
   // Insert comment with status = 'pending' (never from client input)
-  const { data: comment, error: insertError } = await supabase
+  // Using service role client to bypass RLS — status is hardcoded server-side,
+  // and we've already validated the post exists and is published above.
+  const adminSupabase = await createServiceRoleClient()
+  const { data: comment, error: insertError } = await adminSupabase
     .from('comments')
     .insert({
       post_id,
