@@ -16,7 +16,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/
 
-![Trang chủ](docs/screenshots/home.png)
+![Trang chủ](docs/screenshots/Home.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang chủ vào đây -->
 
 ---
@@ -49,7 +49,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/posts/why-i-love-remote-work#comments
 
-![Form bình luận](docs/screenshots/submit_comment.png)
+![Form bình luận](docs/screenshots/sumit_comment.png)
 <!-- 📸 Chèn ảnh chụp màn hình form bình luận vào đây -->
 
 ---
@@ -60,7 +60,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/admin/login
 
-![Trang đăng nhập](docs/screenshots/login.png)
+![Trang đăng nhập](docs/screenshots/Login.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang login vào đây -->
 
 ---
@@ -93,7 +93,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/admin/comments
 
-![Kiểm duyệt bình luận](docs/screenshots/admin_comments.png)
+![Kiểm duyệt bình luận](docs/screenshots/admin_comment.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang kiểm duyệt vào đây -->
 
 ---
