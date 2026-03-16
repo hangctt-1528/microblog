@@ -89,6 +89,29 @@ export async function getAdminPosts(
 }
 
 /**
+ * Returns a single post by ID for the CMS admin area.
+ * Returns null when not found.
+ */
+export async function getAdminPostById(
+  id: string,
+): Promise<PostWithAuthorAndTags | null> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('posts')
+    .select(POST_WITH_AUTHOR_TAGS_SELECT)
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    throw new Error(`getAdminPostById: ${error.message}`)
+  }
+
+  return data as PostWithAuthorAndTags
+}
+
+/**
  * Ensures the given base slug is unique in the posts table.
  * Appends -2, -3, … until an unused slug is found.
  *

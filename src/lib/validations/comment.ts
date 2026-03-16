@@ -1,8 +1,12 @@
 import { z } from 'zod'
 
+// Zod 3.25+ enforces strict RFC 4122 UUID (version + variant bits).
+// PostgreSQL accepts any 8-4-4-4-12 hex UUID, so we use a relaxed regex.
+const uuidLike = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/i
+
 export const commentSchema = z.object({
   /** UUID of the post being commented on */
-  post_id: z.string().uuid('Invalid post ID'),
+  post_id: z.string().regex(uuidLike, 'Invalid post ID'),
   /** Display name of the comment author */
   author_name: z
     .string()
