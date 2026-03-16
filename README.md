@@ -27,7 +27,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/posts/why-i-love-remote-work
 
-![Chi tiết bài viết](docs/screenshots/post-detail.png)
+![Chi tiết bài viết](docs/screenshots/post_detail.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang bài viết vào đây -->
 
 ---
@@ -38,7 +38,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/tags/productivity
 
-![Trang tag](docs/screenshots/tag-page.png)
+![Trang tag](docs/screenshots/post_by_tag.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang tag vào đây -->
 
 ---
@@ -49,7 +49,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/posts/why-i-love-remote-work#comments
 
-![Form bình luận](docs/screenshots/comment-form.png)
+![Form bình luận](docs/screenshots/submit_comment.png)
 <!-- 📸 Chèn ảnh chụp màn hình form bình luận vào đây -->
 
 ---
@@ -60,7 +60,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/admin/login
 
-![Trang đăng nhập](docs/screenshots/admin-login.png)
+![Trang đăng nhập](docs/screenshots/login.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang login vào đây -->
 
 ---
@@ -71,7 +71,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/admin/posts
 
-![Quản lý bài viết](docs/screenshots/admin-posts.png)
+![Quản lý bài viết](docs/screenshots/admin_posts.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang admin posts vào đây -->
 
 ---
@@ -82,7 +82,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/admin/posts/new
 
-![Soạn thảo bài viết](docs/screenshots/admin-post-editor.png)
+![Soạn thảo bài viết](docs/screenshots/new_post.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang soạn thảo vào đây -->
 
 ---
@@ -93,7 +93,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/admin/comments
 
-![Kiểm duyệt bình luận](docs/screenshots/admin-comments.png)
+![Kiểm duyệt bình luận](docs/screenshots/admin_comments.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang kiểm duyệt vào đây -->
 
 ---
@@ -104,7 +104,7 @@
 
 🔗 **Demo:** https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app/admin/tags
 
-![Quản lý tag](docs/screenshots/admin-tags.png)
+![Quản lý tag](docs/screenshots/admin_tags.png)
 <!-- 📸 Chèn ảnh chụp màn hình trang quản lý tag vào đây -->
 
 ---
@@ -389,7 +389,7 @@ pnpm tsc --noEmit
    supabase db push
    ```
 5. Deploy ✅
-
+https://project-0e66m-79lo03ksi-chuhangpt96-8349s-projects.vercel.app
 ---
 
 ## Post Lifecycle
