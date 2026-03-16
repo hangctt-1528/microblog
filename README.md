@@ -192,6 +192,27 @@ A minimal, fast, full-stack microblog — write in Markdown, publish instantly, 
 | Deployment | [Vercel](https://vercel.com) (ISR + Edge CDN) |
 | Testing | Vitest (unit) + Playwright (E2E) |
 | Package Manager | pnpm |
+| AI Assistant | [GitHub Copilot](https://github.com/features/copilot) (code generation, spec writing) |
+| MCP Servers | [GitHub MCP](https://github.com/github/github-mcp-server) · [Context7](https://context7.com) |
+
+---
+
+## 🤖 AI Agents & MCP Servers
+
+Dự án được phát triển với sự hỗ trợ của các AI agent và MCP server sau:
+
+### AI Tools
+
+| Tool | Vai trò |
+|------|---------|
+| **GitHub Copilot** | Sinh code, viết spec, đề xuất kiến trúc, hỗ trợ toàn bộ quá trình phát triển |
+
+### MCP Servers
+
+| MCP Server | Mục đích sử dụng |
+|------------|-----------------|
+| **[GitHub MCP Server](https://github.com/github/github-mcp-server)** | Tương tác với GitHub API: tìm kiếm code, tạo issue, quản lý pull request trực tiếp từ AI agent |
+| **[Context7](https://context7.com)** | Tra cứu tài liệu thư viện cập nhật (Next.js, Supabase, shadcn/ui...) trong thời gian thực để sinh code chính xác |
 
 ---
 
